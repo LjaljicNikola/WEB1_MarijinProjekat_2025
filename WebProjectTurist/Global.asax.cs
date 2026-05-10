@@ -1,7 +1,6 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -17,18 +16,17 @@ namespace WebProjectTurist
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            //  UËitavanje svih JSON fajlova pri startu aplikacije
-            Application["korisnici"] = LoadData<List<Korisnik>>("~/App_Data/users.json") ?? new List<Korisnik>();
-            Application["aranzmani"] = LoadData<List<Aranzman>>("~/App_Data/arrangements.json") ?? new List<Aranzman>();
-            Application["komentari"] = LoadData<List<Komentar>>("~/App_Data/comments.json") ?? new List<Komentar>();
-            Application["rezervacije"] = LoadData<List<Rezervacija>>("~/App_Data/reservations.json") ?? new List<Rezervacija>();
+            // Uƒçitavanje svih JSON fajlova pri startu aplikacije
+            Application["ucesnici"] = LoadData<List<Ucesnik>>("~/App_Data/ucesnici.json") ?? new List<Ucesnik>();
+            Application["predavaci"] = LoadData<List<Predavac>>("~/App_Data/predavaci.json") ?? new List<Predavac>();
+            Application["administratori"] = LoadData<List<Administrator>>("~/App_Data/administratori.json") ?? new List<Administrator>();
+            Application["radionice"] = LoadData<List<Radionica>>("~/App_Data/radionice.json") ?? new List<Radionica>();
+            Application["prijave"] = LoadData<List<Prijava>>("~/App_Data/prijave.json") ?? new List<Prijava>();
         }
 
-        // UËitavanje podataka iz JSON fajla
         private T LoadData<T>(string path)
         {
             string filePath = HttpContext.Current.Server.MapPath(path);
-
             try
             {
                 if (!File.Exists(filePath))
@@ -36,7 +34,6 @@ namespace WebProjectTurist
                     File.WriteAllText(filePath, "[]");
                     return Activator.CreateInstance<T>();
                 }
-
                 string json = File.ReadAllText(filePath);
                 if (string.IsNullOrWhiteSpace(json))
                     return Activator.CreateInstance<T>();
@@ -46,12 +43,11 @@ namespace WebProjectTurist
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Greöka pri uËitavanju " + path + ": " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Gre≈°ka pri uƒçitavanju " + path + ": " + ex.Message);
                 return Activator.CreateInstance<T>();
             }
         }
 
-        //»uvanje podataka u JSON fajl
         public static void StoreData<T>(string path, List<T> data)
         {
             try
@@ -59,108 +55,15 @@ namespace WebProjectTurist
                 string filePath = HttpContext.Current.Server.MapPath(path);
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 string json = serializer.Serialize(data);
-
                 string directory = Path.GetDirectoryName(filePath);
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
-
                 File.WriteAllText(filePath, json);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Greöka pri Ëuvanju " + path + ": " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Gre≈°ka pri ƒçuvanju " + path + ": " + ex.Message);
             }
         }
-
-        //  Centralizovana metoda za sinhronizaciju svih JSON fajlova
-        public static void AzurirajISacuvajSvePodatke()
-        {
-            var aranzmani = (List<Aranzman>)HttpContext.Current.Application["aranzmani"];
-            var korisnici = (List<Korisnik>)HttpContext.Current.Application["korisnici"];
-            var rezervacije = (List<Rezervacija>)HttpContext.Current.Application["rezervacije"];
-            var komentari = (List<Komentar>)HttpContext.Current.Application["komentari"];
-
-            if (aranzmani == null || korisnici == null || rezervacije == null || komentari == null)
-                return;
-
-            // Sinhronizuj aranûmane kod menadûera
-            foreach (var korisnik in korisnici)
-            {
-                if (korisnik.Uloga == UlogaKorisnika.Menadzer && korisnik.KreiraniAranzmani != null)
-                {
-                    for (int i = 0; i < korisnik.KreiraniAranzmani.Count; i++)
-                    {
-                        var novi = aranzmani.FirstOrDefault(a => a.Naziv == korisnik.KreiraniAranzmani[i].Naziv);
-                        if (novi != null)
-                            korisnik.KreiraniAranzmani[i] = novi;
-                    }
-                }
-            }
-
-            //  Sinhronizuj aranûmane i jedinice u rezervacijama
-            foreach (var rez in rezervacije)
-            {
-                //pronai aûurirani aranûman
-                var noviAranzman = aranzmani.FirstOrDefault(a => a.Naziv == rez.AranzmanRezervacije?.Naziv);
-                if (noviAranzman != null)
-                    rez.AranzmanRezervacije = noviAranzman;
-
-                //ako rezervacija ima jedinicu ó pronai novu verziju te jedinice
-                if (rez.Jedinica != null && rez.AranzmanRezervacije != null)
-                {
-                    SmestajnaJedinica odgovarajuca = null;
-
-                    // traûi po ID-u (najpouzdanije)
-                    if (!string.IsNullOrEmpty(rez.Jedinica.Id))
-                    {
-                        odgovarajuca = rez.AranzmanRezervacije.Smestaji
-                            .SelectMany(s => s.SmestajneJedinice)
-                            .FirstOrDefault(j => j.Id == rez.Jedinica.Id);
-                    }
-
-                    // fallback ako stari JSON nema Id ó poredi po kljuËnim poljima
-                    if (odgovarajuca == null)
-                    {
-                        odgovarajuca = rez.AranzmanRezervacije.Smestaji
-                            .SelectMany(s => s.SmestajneJedinice)
-                            .FirstOrDefault(j =>
-                                j.DozvoljenBrojGostiju == rez.Jedinica.DozvoljenBrojGostiju &&
-                                Math.Abs(j.Cena - rez.Jedinica.Cena) < 0.01 &&
-                                j.DozvoljeniLjubimci == rez.Jedinica.DozvoljeniLjubimci
-                            );
-                    }
-
-                    if (odgovarajuca != null)
-                        rez.Jedinica = odgovarajuca;
-                }
-            }
-
-            //Sinhronizuj smeötaje u komentarima
-            foreach (var komentar in komentari)
-            {
-                if (komentar.SmestajKomentar != null)
-                {
-                    var noviSmestaj = aranzmani
-                        .SelectMany(a => a.Smestaji)
-                        .FirstOrDefault(s => s.Naziv == komentar.SmestajKomentar.Naziv);
-
-                    if (noviSmestaj != null)
-                        komentar.SmestajKomentar = noviSmestaj;
-                }
-            }
-
-            //SaËuvaj sve izmene nazad u JSON fajlove
-            StoreData("~/App_Data/arrangements.json", aranzmani);
-            StoreData("~/App_Data/users.json", korisnici);
-            StoreData("~/App_Data/reservations.json", rezervacije);
-            StoreData("~/App_Data/comments.json", komentari);
-
-            //Aûuriraj Application promenljive u memoriji
-            HttpContext.Current.Application["aranzmani"] = aranzmani;
-            HttpContext.Current.Application["korisnici"] = korisnici;
-            HttpContext.Current.Application["rezervacije"] = rezervacije;
-            HttpContext.Current.Application["komentari"] = komentari;
-        }
-
     }
 }

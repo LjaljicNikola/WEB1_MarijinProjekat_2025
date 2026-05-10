@@ -1,0 +1,59 @@
+@using WebProjectTurist.Controllers
+@{
+    ViewBag.Title = "Prijave za radionicu";
+    var radionica = ViewBag.Radionica as WebProjectTurist.Models.Radionica;
+    var prijaveDetalji = ViewBag.PrijaveDetalji as List<PredavacPrijavaViewModel>;
+    string sort = ViewBag.Sort as string ?? "";
+    string sortDir = ViewBag.SortDir as string ?? "asc";
+    string nextDir = sortDir == "asc" ? "desc" : "asc";
+}
+
+<h2>Prijave za: @radionica?.Naziv</h2>
+
+<form method="get" action="@Url.Action("Prijave", "Predavac")" class="form-inline mb-3">
+    <input type="hidden" name="radionicaId" value="@radionica?.Id" />
+    <input type="text" name="jmbg" placeholder="JMBG" class="form-control mr-1" />
+    <input type="text" name="ime" placeholder="Ime" class="form-control mr-1" />
+    <input type="text" name="prezime" placeholder="Prezime" class="form-control mr-1" />
+    <select name="status" class="form-control mr-1">
+        <option value="">-- Status --</option>
+        <option value="AKTIVNA">AKTIVNA</option>
+        <option value="OTKAZANA">OTKAZANA</option>
+    </select>
+    <button type="submit" class="btn btn-secondary">Filtriraj</button>
+</form>
+
+@if (prijaveDetalji == null || prijaveDetalji.Count == 0)
+{
+    <p>Nema prijava za ovu radionicu.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><a href="?radionicaId=@radionica?.Id&sort=jmbg&sortDir=@(sort=="jmbg"?nextDir:"asc")">JMBG</a></th>
+                <th><a href="?radionicaId=@radionica?.Id&sort=ime&sortDir=@(sort=="ime"?nextDir:"asc")">Ime</a></th>
+                <th><a href="?radionicaId=@radionica?.Id&sort=prezime&sortDir=@(sort=="prezime"?nextDir:"asc")">Prezime</a></th>
+                <th>Email</th>
+                <th>Datum kreiranja</th>
+                <th><a href="?radionicaId=@radionica?.Id&sort=status&sortDir=@(sort=="status"?nextDir:"asc")">Status</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in prijaveDetalji)
+            {
+                <tr>
+                    <td>@p.Ucesnik.JMBG</td>
+                    <td>@p.Ucesnik.Ime</td>
+                    <td>@p.Ucesnik.Prezime</td>
+                    <td>@p.Ucesnik.Email</td>
+                    <td>@p.Prijava.DatumVremeKreiranja</td>
+                    <td>@p.Prijava.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a href="@Url.Action("Radionice", "Predavac")" class="btn btn-default">Nazad</a>

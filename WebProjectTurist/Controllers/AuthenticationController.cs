@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using WebProjectTurist.Models;
@@ -9,50 +10,79 @@ namespace WebProjectTurist.Controllers
 {
     public class AuthenticationController : Controller
     {
-        // GET: Authentication/Login
+        // GET: Login (pocetna strana)
         public ActionResult Login()
         {
             return View();
         }
 
-        // GET: Registration form
+        // GET: Register
         public ActionResult Register()
         {
             return View();
         }
 
-        // POST: Register new user
+        // POST: Register - registracija novog Ucesnika
         [HttpPost]
-        public ActionResult Register(string korisnickoIme, string lozinka, string ime, string prezime,
-                                     string pol, string email, string datumRodjenja)
+        public ActionResult Register(string korisnickoIme, string lozinka, string jmbg,
+                                     string ime, string prezime, string datumRodjenja,
+                                     string email, string nivoObrazovanja)
         {
-            var korisnici = (List<Korisnik>)HttpContext.Application["korisnici"];
+            var ucesnici = (List<Ucesnik>)HttpContext.Application["ucesnici"];
+            var predavaci = (List<Predavac>)HttpContext.Application["predavaci"];
 
-            if (korisnici.Any(k => k.KorisnickoIme.Equals(korisnickoIme, StringComparison.OrdinalIgnoreCase)))
+            // Validacija jedinstvenosti korisnickog imena
+            if (ucesnici.Any(u => u.KorisnickoIme.Equals(korisnickoIme, StringComparison.OrdinalIgnoreCase))
+             || predavaci.Any(p => p.KorisnickoIme.Equals(korisnickoIme, StringComparison.OrdinalIgnoreCase)))
             {
-                ViewBag.Message = "Korisnicko ime vec postoji!";
+                ViewBag.Message = "Korisničko ime već postoji!";
                 return View();
             }
 
-            Korisnik novi = new Korisnik()
+            // Validacija JMBG - tacno 13 numeričkih karaktera, jedinstven
+            if (string.IsNullOrEmpty(jmbg) || jmbg.Length != 13 || !Regex.IsMatch(jmbg, @"^\d{13}$"))
+            {
+                ViewBag.Message = "JMBG mora biti tačno 13 numeričkih karaktera!";
+                return View();
+            }
+            if (ucesnici.Any(u => u.JMBG == jmbg) || predavaci.Any(p => p.JMBG == jmbg))
+            {
+                ViewBag.Message = "JMBG već postoji u sistemu!";
+                return View();
+            }
+
+            // Validacija email jedinstvenosti
+            if (ucesnici.Any(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase))
+             || predavaci.Any(p => p.Email.Equals(email, StringComparison.OrdinalIgnoreCase)))
+            {
+                ViewBag.Message = "Email adresa već postoji u sistemu!";
+                return View();
+            }
+
+            if (!Enum.TryParse(nivoObrazovanja, out NivoObrazovanja nivo))
+            {
+                ViewBag.Message = "Neispravan nivo obrazovanja!";
+                return View();
+            }
+
+            Ucesnik novi = new Ucesnik()
             {
                 KorisnickoIme = korisnickoIme,
                 Lozinka = lozinka,
+                JMBG = jmbg,
                 Ime = ime,
                 Prezime = prezime,
-                Pol = pol,
-                Email = email,
                 DatumRodjenja = datumRodjenja,
-                Uloga = UlogaKorisnika.Turista,
-                
+                Email = email,
+                NivoObrazovanja = nivo
             };
 
-            korisnici.Add(novi);
-            HttpContext.Application["korisnici"] = korisnici;
-
-            MvcApplication.StoreData("~/App_Data/users.json", korisnici);
+            ucesnici.Add(novi);
+            HttpContext.Application["ucesnici"] = ucesnici;
+            MvcApplication.StoreData("~/App_Data/ucesnici.json", ucesnici);
 
             Session["user"] = novi;
+            Session["uloga"] = "Ucesnik";
             return RedirectToAction("Index", "Home");
         }
 
@@ -60,27 +90,58 @@ namespace WebProjectTurist.Controllers
         [HttpPost]
         public ActionResult Login(string korisnickoIme, string lozinka)
         {
-            var korisnici = (List<Korisnik>)HttpContext.Application["korisnici"];
+            var ucesnici     = (List<Ucesnik>)HttpContext.Application["ucesnici"];
+            var predavaci    = (List<Predavac>)HttpContext.Application["predavaci"];
+            var administratori = (List<Administrator>)HttpContext.Application["administratori"];
 
-            Korisnik user = korisnici.FirstOrDefault(k =>
-                k.KorisnickoIme.Equals(korisnickoIme, StringComparison.OrdinalIgnoreCase)
-                && k.Lozinka == lozinka && !k.Obrisan);
-
-            if (user == null)
+            // Provjera u ucesnicima
+            var ucesnik = ucesnici.FirstOrDefault(u =>
+                u.KorisnickoIme.Equals(korisnickoIme, StringComparison.OrdinalIgnoreCase)
+                && u.Lozinka == lozinka);
+            if (ucesnik != null)
             {
-                ViewBag.Message = "Pogrešno korisničko ime ili lozinka!";
-                return View("Login");
+                Session["user"] = ucesnik;
+                Session["uloga"] = "Ucesnik";
+                return RedirectToAction("Index", "Home");
             }
 
-            Session["user"] = user;
-            return RedirectToAction("Index", "Home");
+            // Provjera u predavacima - blokirani ne mogu da se prijave
+            var predavac = predavaci.FirstOrDefault(p =>
+                p.KorisnickoIme.Equals(korisnickoIme, StringComparison.OrdinalIgnoreCase)
+                && p.Lozinka == lozinka);
+            if (predavac != null)
+            {
+                if (predavac.StatusNaloga == StatusNaloga.BLOKIRAN)
+                {
+                    ViewBag.Message = "Vaš nalog je blokiran i ne možete se prijaviti na sistem.";
+                    return View();
+                }
+                Session["user"] = predavac;
+                Session["uloga"] = "Predavac";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Provjera u administratorima
+            var admin = administratori.FirstOrDefault(a =>
+                a.KorisnickoIme.Equals(korisnickoIme, StringComparison.OrdinalIgnoreCase)
+                && a.Lozinka == lozinka);
+            if (admin != null)
+            {
+                Session["user"] = admin;
+                Session["uloga"] = "Administrator";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.Message = "Pogrešno korisničko ime ili lozinka!";
+            return View();
         }
 
         // GET: Logout
         public ActionResult Logout()
         {
             Session["user"] = null;
-            return RedirectToAction("Index", "Home");
+            Session["uloga"] = null;
+            return RedirectToAction("Login");
         }
     }
 }

@@ -1,0 +1,73 @@
+@model List<WebProjectTurist.Models.Predavac>
+@{
+    ViewBag.Title = "Predavači";
+    string sort = ViewBag.Sort as string ?? "";
+    string sortDir = ViewBag.SortDir as string ?? "asc";
+    string nextDir = sortDir == "asc" ? "desc" : "asc";
+}
+
+<h2>Predavači u sistemu</h2>
+
+@if (TempData["Message"] != null) { <div class="alert alert-success">@TempData["Message"]</div> }
+
+<a href="@Url.Action("NoviPredavac", "Admin")" class="btn btn-primary mb-3">+ Novi predavač</a>
+
+<form method="get" action="@Url.Action("Predavaci", "Admin")" class="form-inline mb-3">
+    <input type="text" name="jmbg" placeholder="JMBG" class="form-control mr-1" />
+    <input type="text" name="ime" placeholder="Ime" class="form-control mr-1" />
+    <input type="text" name="prezime" placeholder="Prezime" class="form-control mr-1" />
+    <input type="text" name="email" placeholder="Email" class="form-control mr-1" />
+    <select name="oblast" class="form-control mr-1">
+        <option value="">-- Oblast --</option>
+        @foreach (var o in Enum.GetValues(typeof(WebProjectTurist.Models.OblastEkspertize)))
+        {
+            <option value="@o">@o</option>
+        }
+    </select>
+    <select name="status" class="form-control mr-1">
+        <option value="">-- Status --</option>
+        <option value="AKTIVAN">AKTIVAN</option>
+        <option value="BLOKIRAN">BLOKIRAN</option>
+    </select>
+    <button type="submit" class="btn btn-secondary">Filtriraj</button>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th><a href="?sort=jmbg&sortDir=@(sort=="jmbg"?nextDir:"asc")">JMBG</a></th>
+            <th><a href="?sort=ime&sortDir=@(sort=="ime"?nextDir:"asc")">Ime</a></th>
+            <th><a href="?sort=prezime&sortDir=@(sort=="prezime"?nextDir:"asc")">Prezime</a></th>
+            <th><a href="?sort=datum&sortDir=@(sort=="datum"?nextDir:"asc")">Datum rođenja</a></th>
+            <th><a href="?sort=email&sortDir=@(sort=="email"?nextDir:"asc")">Email</a></th>
+            <th><a href="?sort=oblast&sortDir=@(sort=="oblast"?nextDir:"asc")">Oblast</a></th>
+            <th><a href="?sort=status&sortDir=@(sort=="status"?nextDir:"asc")">Status</a></th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr class="@(p.StatusNaloga == WebProjectTurist.Models.StatusNaloga.BLOKIRAN ? "table-danger" : "")">
+                <td>@p.JMBG</td>
+                <td>@p.Ime</td>
+                <td>@p.Prezime</td>
+                <td>@p.DatumRodjenja</td>
+                <td>@p.Email</td>
+                <td>@p.OblastEkspertize</td>
+                <td>@p.StatusNaloga</td>
+                <td>
+                    <a href="@Url.Action("AzurirajPredavaca", "Admin", new { korisnickoIme = p.KorisnickoIme })" class="btn btn-sm btn-warning">Izmeni</a>
+                    @if (p.StatusNaloga == WebProjectTurist.Models.StatusNaloga.AKTIVAN)
+                    {
+                        using (Html.BeginForm("BlokirajPredavaca", "Admin", FormMethod.Post, new { style = "display:inline" }))
+                        {
+                            <input type="hidden" name="korisnickoIme" value="@p.KorisnickoIme" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Blokirati predavača? Sve njegove radionice će biti obrisane!')">Blokiraj</button>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

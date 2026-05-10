@@ -1,0 +1,50 @@
+@{
+    ViewBag.Title = "Nova radionica";
+}
+
+<h2>Kreiranje nove radionice</h2>
+
+@if (!string.IsNullOrEmpty(ViewBag.Error))
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@using (Html.BeginForm("NovaRadionica", "Predavac", FormMethod.Post))
+{
+    <div class="form-group">
+        <label>Naziv: *</label>
+        <input type="text" name="naziv" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Opis:</label>
+        <textarea name="opis" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Kategorija: *</label>
+        <select name="kategorija" class="form-control" required>
+            <option value="">-- Izaberite --</option>
+            @foreach (var o in Enum.GetValues(typeof(WebProjectTurist.Models.OblastEkspertize)))
+            {
+                <option value="@o">@o</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Datum i vreme početka (dd/MM/yyyy HH:mm): *</label>
+        <input type="text" name="datumVremePocetka" class="form-control" placeholder="01/06/2026 10:00" required />
+    </div>
+    <div class="form-group">
+        <label>Trajanje (minuti): *</label>
+        <input type="number" name="trajanje" class="form-control" min="1" required />
+    </div>
+    <div class="form-group">
+        <label>Mesto održavanja: *</label>
+        <input type="text" name="mestoOdrzavanja" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Maksimalan broj učesnika: *</label>
+        <input type="number" name="maksimalanBrojUcesnika" class="form-control" min="1" required />
+    </div>
+    <button type="submit" class="btn btn-success">Kreiraj radionicu</button>
+    <a href="@Url.Action("Radionice", "Predavac")" class="btn btn-default">Odustani</a>
+}

@@ -1,0 +1,70 @@
+@using WebProjectTurist.Controllers
+@model List<UcesnikPrijavaViewModel>
+@{
+    ViewBag.Title = "Moje prijave";
+    string sort = ViewBag.Sort as string ?? "";
+    string sortDir = ViewBag.SortDir as string ?? "asc";
+    string nextDir = sortDir == "asc" ? "desc" : "asc";
+}
+
+<h2>Moje prijave</h2>
+
+@if (TempData["Message"] != null) { <div class="alert alert-success">@TempData["Message"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<form method="get" action="@Url.Action("Prijave", "Ucesnik")" class="form-inline mb-3">
+    <input type="text" name="naziv" placeholder="Naziv radionice" class="form-control mr-1" />
+    <select name="kategorija" class="form-control mr-1">
+        <option value="">-- Kategorija --</option>
+        @foreach (var o in Enum.GetValues(typeof(WebProjectTurist.Models.OblastEkspertize)))
+        {
+            <option value="@o">@o</option>
+        }
+    </select>
+    <input type="text" name="datumPocetka" placeholder="Datum (dd/MM/yyyy)" class="form-control mr-1" />
+    <button type="submit" class="btn btn-secondary">Filtriraj</button>
+</form>
+
+@if (Model.Count == 0)
+{
+    <p>Nemate prijava.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><a href="?sort=naziv&sortDir=@(sort=="naziv"?nextDir:"asc")">Naziv radionice</a></th>
+                <th><a href="?sort=kat&sortDir=@(sort=="kat"?nextDir:"asc")">Kategorija</a></th>
+                <th><a href="?sort=datum&sortDir=@(sort=="datum"?nextDir:"asc")">Datum i vreme početka</a></th>
+                <th>Mesto</th>
+                <th>Datum kreiranja prijave</th>
+                <th>Status prijave</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Radionica.Naziv</td>
+                    <td>@item.Radionica.Kategorija</td>
+                    <td>@item.Radionica.DatumVremepocetka</td>
+                    <td>@item.Radionica.MestoOdrzavanja</td>
+                    <td>@item.Prijava.DatumVremeKreiranja</td>
+                    <td>@item.Prijava.Status</td>
+                    <td>
+                        @if (item.Prijava.Status == WebProjectTurist.Models.StatusPrijave.AKTIVNA)
+                        {
+                            using (Html.BeginForm("OtkaziPrijavu", "Ucesnik", FormMethod.Post, new { style = "display:inline" }))
+                            {
+                                <input type="hidden" name="prijavaId" value="@item.Prijava.Id" />
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Otkazati prijavu?')">Otkaži</button>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

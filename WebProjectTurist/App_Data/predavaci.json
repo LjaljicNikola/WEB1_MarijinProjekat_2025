@@ -1,0 +1,24 @@
+[
+  {
+    "KorisnickoIme": "predavac1",
+    "Lozinka": "lozinka123",
+    "JMBG": "1234567890123",
+    "Ime": "Nikola",
+    "Prezime": "Jovanović",
+    "DatumRodjenja": "20/05/1985",
+    "Email": "nikola.jovanovic@example.com",
+    "OblastEkspertize": "PROGRAMIRANJE",
+    "StatusNaloga": "AKTIVAN"
+  },
+  {
+    "KorisnickoIme": "predavac2",
+    "Lozinka": "lozinka123",
+    "JMBG": "9876543210987",
+    "Ime": "Ana",
+    "Prezime": "Milić",
+    "DatumRodjenja": "10/11/1990",
+    "Email": "ana.milic@example.com",
+    "OblastEkspertize": "DIZAJN",
+    "StatusNaloga": "AKTIVAN"
+  }
+]

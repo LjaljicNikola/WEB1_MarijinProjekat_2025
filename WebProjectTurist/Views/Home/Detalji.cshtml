@@ -1,0 +1,38 @@
+@model WebProjectTurist.Models.Radionica
+@{
+    ViewBag.Title = "Detalji radionice";
+    var predavac = ViewBag.Predavac as WebProjectTurist.Models.Predavac;
+    var uloga = Session["uloga"] as string;
+}
+
+<h2>@Model.Naziv</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table">
+    <tr><th>Opis</th><td>@Model.Opis</td></tr>
+    <tr><th>Kategorija</th><td>@Model.Kategorija</td></tr>
+    <tr><th>Datum i vreme početka</th><td>@Model.DatumVremepocetka</td></tr>
+    <tr><th>Trajanje</th><td>@Model.Trajanje minuta</td></tr>
+    <tr><th>Mesto održavanja</th><td>@Model.MestoOdrzavanja</td></tr>
+    <tr><th>Slobodna mesta</th><td>@Model.BrojSlobodnihMesta / @Model.MaksimalanBrojUcesnika</td></tr>
+    <tr><th>Status</th><td>@Model.Status</td></tr>
+    @if (predavac != null)
+    {
+        <tr><th>Predavač</th><td>@predavac.Ime @predavac.Prezime (@predavac.OblastEkspertize)</td></tr>
+    }
+</table>
+
+@if (uloga == "Ucesnik")
+{
+    using (Html.BeginForm("PrijaviSe", "Ucesnik", FormMethod.Post))
+    {
+        <input type="hidden" name="radionicaId" value="@Model.Id" />
+        <button type="submit" class="btn btn-success">Prijavi se na radionicu</button>
+    }
+}
+
+<a href="@Url.Action("Index", "Home")" class="btn btn-default">Nazad</a>

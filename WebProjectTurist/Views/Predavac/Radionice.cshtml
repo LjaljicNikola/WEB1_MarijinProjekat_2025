@@ -1,0 +1,55 @@
+@model List<WebProjectTurist.Models.Radionica>
+@{
+    ViewBag.Title = "Moje radionice";
+}
+
+<h2>Moje radionice</h2>
+
+@if (TempData["Message"] != null) { <div class="alert alert-success">@TempData["Message"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<a href="@Url.Action("NovaRadionica", "Predavac")" class="btn btn-primary mb-3">+ Nova radionica</a>
+
+@if (Model.Count == 0)
+{
+    <p>Nemate kreiranih radionice.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Naziv</th>
+                <th>Kategorija</th>
+                <th>Datum i vreme</th>
+                <th>Trajanje</th>
+                <th>Mesto</th>
+                <th>Slobodna mesta</th>
+                <th>Status</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Naziv</td>
+                    <td>@r.Kategorija</td>
+                    <td>@r.DatumVremepocetka</td>
+                    <td>@r.Trajanje min</td>
+                    <td>@r.MestoOdrzavanja</td>
+                    <td>@r.BrojSlobodnihMesta / @r.MaksimalanBrojUcesnika</td>
+                    <td>@r.Status</td>
+                    <td>
+                        <a href="@Url.Action("Prijave", "Predavac", new { radionicaId = r.Id })" class="btn btn-sm btn-info">Prijave</a>
+                        @using (Html.BeginForm("ObrisiRadionicu", "Predavac", FormMethod.Post, new { style = "display:inline" }))
+                        {
+                            <input type="hidden" name="id" value="@r.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Obrisati radionicu? Sve aktivne prijave će biti otkazane!')">Obriši</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

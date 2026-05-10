@@ -1,0 +1,16 @@
+[
+  {
+    "Id": "prijava-001",
+    "UcesnikKorisnickoIme": "ucesnik1",
+    "RadionicaId": "rad-001",
+    "Status": "AKTIVNA",
+    "DatumVremeKreiranja": "01/05/2026 12:00"
+  },
+  {
+    "Id": "prijava-002",
+    "UcesnikKorisnickoIme": "ucesnik2",
+    "RadionicaId": "rad-001",
+    "Status": "AKTIVNA",
+    "DatumVremeKreiranja": "02/05/2026 09:30"
+  }
+]

@@ -103,52 +103,41 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\MenadzerController.cs" />
-    <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Controllers\TuristaController.cs" />
+    <Compile Include="Controllers\PredavacController.cs" />
+    <Compile Include="Controllers\UcesnikController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Aranzman.cs" />
-    <Compile Include="Models\Komentar.cs" />
-    <Compile Include="Models\Korisnik.cs" />
-    <Compile Include="Models\Rezervacija.cs" />
-    <Compile Include="Models\Smestaj.cs" />
-    <Compile Include="Models\SmestajnaJedinica.cs" />
+    <Compile Include="Models\Administrator.cs" />
+    <Compile Include="Models\Predavac.cs" />
+    <Compile Include="Models\Prijava.cs" />
+    <Compile Include="Models\Radionica.cs" />
+    <Compile Include="Models\Ucesnik.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
-    <Content Include="App_Data\users.json" />
-    <Content Include="App_Data\arrangements.json" />
-    <Content Include="App_Data\reservations.json" />
-    <Content Include="App_Data\comments.json" />
+    <Content Include="App_Data\administratori.json" />
+    <Content Include="App_Data\predavaci.json" />
+    <Content Include="App_Data\prijave.json" />
+    <Content Include="App_Data\radionice.json" />
+    <Content Include="App_Data\ucesnici.json" />
     <None Include="packages.config" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Details.cshtml" />
     <Content Include="Views\Authentication\Register.cshtml" />
     <Content Include="Views\Authentication\Login.cshtml" />
-    <Content Include="Views\Profile\EditProfile.cshtml" />
-    <Content Include="Views\Profile\ViewProfile.cshtml" />
-    <Content Include="Views\Turista\Rezervacije.cshtml" />
-    <Content Include="Views\Turista\NovaRezervacija.cshtml" />
-    <Content Include="Views\Turista\Detalji.cshtml" />
-    <Content Include="Views\Turista\OstaviKomentar.cshtml" />
-    <Content Include="Views\Menadzer\Aranzmani.cshtml" />
-    <Content Include="Views\Menadzer\NoviAranzman.cshtml" />
-    <Content Include="Views\Menadzer\IzmeniAranzman.cshtml" />
-    <Content Include="Views\Menadzer\Smestaji.cshtml" />
-    <Content Include="Views\Menadzer\NoviSmestaj.cshtml" />
-    <Content Include="Views\Menadzer\SmestajneJedinice.cshtml" />
-    <Content Include="Views\Menadzer\NovaJedinica.cshtml" />
-    <Content Include="Views\Menadzer\Rezervacije.cshtml" />
-    <Content Include="Views\Menadzer\Komentari.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Admin\Korisnici.cshtml" />
     <Content Include="Views\Admin\NoviMenadzer.cshtml" />
-    <Content Include="Views\Menadzer\IzmeniSmestaj.cshtml" />
-    <Content Include="Views\Menadzer\IzmeniJedinicu.cshtml" />
-    <Content Include="Views\Menadzer\DetaljiRezervacije.cshtml" />
+    <Content Include="Views\Admin\AzurirajPredavaca.cshtml" />
+    <Content Include="Views\Admin\NoviPredavac.cshtml" />
+    <Content Include="Views\Admin\Predavaci.cshtml" />
+    <Content Include="Views\Home\Detalji.cshtml" />
+    <Content Include="Views\Predavac\NovaRadionica.cshtml" />
+    <Content Include="Views\Predavac\Prijave.cshtml" />
+    <Content Include="Views\Predavac\Radionice.cshtml" />
+    <Content Include="Views\Ucesnik\Prijave.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,15 +1,15 @@
 @{
-    ViewBag.Title = "Registracija";
+    ViewBag.Title = "Novi predavač";
 }
 
-<h2>Registracija novog učesnika</h2>
+<h2>Kreiranje novog predavača</h2>
 
-@if (!string.IsNullOrEmpty(ViewBag.Message))
+@if (!string.IsNullOrEmpty(ViewBag.Error))
 {
-    <div class="alert alert-danger">@ViewBag.Message</div>
+    <div class="alert alert-danger">@ViewBag.Error</div>
 }
 
-@using (Html.BeginForm("Register", "Authentication", FormMethod.Post))
+@using (Html.BeginForm("NoviPredavac", "Admin", FormMethod.Post))
 {
     <div class="form-group">
         <label>Korisničko ime: *</label>
@@ -33,21 +33,22 @@
     </div>
     <div class="form-group">
         <label>Datum rođenja (dd/MM/yyyy): *</label>
-        <input type="text" name="datumRodjenja" class="form-control" placeholder="01/01/1990" required />
+        <input type="text" name="datumRodjenja" class="form-control" placeholder="01/01/1985" required />
     </div>
     <div class="form-group">
         <label>Email: *</label>
         <input type="email" name="email" class="form-control" required />
     </div>
     <div class="form-group">
-        <label>Nivo obrazovanja: *</label>
-        <select name="nivoObrazovanja" class="form-control" required>
+        <label>Oblast ekspertize: *</label>
+        <select name="oblastEkspertize" class="form-control" required>
             <option value="">-- Izaberite --</option>
-            <option value="OSNOVNO">Osnovno</option>
-            <option value="SREDNJE">Srednje</option>
-            <option value="VISOKO">Visoko</option>
+            @foreach (var o in Enum.GetValues(typeof(WebProjectTurist.Models.OblastEkspertize)))
+            {
+                <option value="@o">@o</option>
+            }
         </select>
     </div>
-    <button type="submit" class="btn btn-success">Registruj se</button>
-    <a href="@Url.Action("Login", "Authentication")" class="btn btn-link">Nazad na prijavu</a>
+    <button type="submit" class="btn btn-success">Kreiraj predavača</button>
+    <a href="@Url.Action("Predavaci", "Admin")" class="btn btn-default">Odustani</a>
 }

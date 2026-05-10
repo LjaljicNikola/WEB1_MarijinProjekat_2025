@@ -1,0 +1,56 @@
+@model WebProjectTurist.Models.Predavac
+@{
+    ViewBag.Title = "Ažuriranje predavača";
+}
+
+<h2>Ažuriranje predavača: @Model.KorisnickoIme</h2>
+
+@if (!string.IsNullOrEmpty(ViewBag.Error))
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@using (Html.BeginForm("AzurirajPredavaca", "Admin", FormMethod.Post))
+{
+    <input type="hidden" name="korisnickoIme" value="@Model.KorisnickoIme" />
+
+    <div class="form-group">
+        <label>Korisničko ime (ne može se menjati):</label>
+        <input type="text" value="@Model.KorisnickoIme" class="form-control" disabled />
+    </div>
+    <div class="form-group">
+        <label>JMBG (ne može se menjati):</label>
+        <input type="text" value="@Model.JMBG" class="form-control" disabled />
+    </div>
+    <div class="form-group">
+        <label>Nova lozinka:</label>
+        <input type="password" name="lozinka" class="form-control" value="@Model.Lozinka" required />
+    </div>
+    <div class="form-group">
+        <label>Ime: *</label>
+        <input type="text" name="ime" class="form-control" value="@Model.Ime" required />
+    </div>
+    <div class="form-group">
+        <label>Prezime: *</label>
+        <input type="text" name="prezime" class="form-control" value="@Model.Prezime" required />
+    </div>
+    <div class="form-group">
+        <label>Datum rođenja (dd/MM/yyyy): *</label>
+        <input type="text" name="datumRodjenja" class="form-control" value="@Model.DatumRodjenja" required />
+    </div>
+    <div class="form-group">
+        <label>Email: *</label>
+        <input type="email" name="email" class="form-control" value="@Model.Email" required />
+    </div>
+    <div class="form-group">
+        <label>Oblast ekspertize: *</label>
+        <select name="oblastEkspertize" class="form-control" required>
+            @foreach (var o in Enum.GetValues(typeof(WebProjectTurist.Models.OblastEkspertize)))
+            {
+                <option value="@o" @(Model.OblastEkspertize.ToString() == o.ToString() ? "selected" : "")>@o</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-warning">Sačuvaj izmene</button>
+    <a href="@Url.Action("Predavaci", "Admin")" class="btn btn-default">Odustani</a>
+}

@@ -1,88 +1,63 @@
-﻿@model IEnumerable<WebProjectTurist.Models.Aranzman>
-
+@model List<WebProjectTurist.Models.Radionica>
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewBag.Title = "Pocetna";
-    var user = Session["user"] as WebProjectTurist.Models.Korisnik;
+    ViewBag.Title = "Radionice";
+    var uloga = Session["uloga"] as string;
 }
 
+<h2>Dostupne radionice</h2>
 
-<h2>Turisticki aranzmani</h2>
-
-<form method="get">
-    <label>Naziv: </label>
-    <input type="text" name="searchNaziv" />
-
-    <label>Tip prevoza: </label>
-    <select name="tipPrevoza">
-        <option value="">--svi--</option>
-        <option>Autobus</option>
-        <option>Avion</option>
-        <option>AutobusAvion</option>
-        <option>Individualan</option>
-        <option>Ostalo</option>
-    </select>
-
-    <label>Tip aranzmana: </label>
-    <select name="tipAranzmana">
-        <option value="">--svi--</option>
-        <option>NocenjeSaDoruckom</option>
-        <option>Polupansion</option>
-        <option>PunPansion</option>
-        <option>AllInclusive</option>
-        <option>NajamApartmana</option>
-    </select>
-    <br />
-    <label>Datum početka - od: </label>
-    <input type="date" name="datumPocetkaOd" />
-
-    <label>Datum početka - do: </label>
-    <input type="date" name="datumPocetkaDo" />
-
-    <label>Datum završetka - od: </label>
-    <input type="date" name="datumZavrsetkaOd" />
-
-    <label>Datum završetka - do: </label>
-    <input type="date" name="datumZavrsetkaDo" />
-    <br />
-    <label>Sortiraj po: </label>
-    <select name="sort">
-        <option value="">--</option>
-        <option value="nazivAsc">Naziv ↑</option>
-        <option value="nazivDesc">Naziv ↓</option>
-        <option value="pocetakAsc">Datum pocetka ↑</option>
-        <option value="pocetakDesc">Datum pocetka ↓</option>
-        <option value="krajAsc">Datum zavrsetka ↑</option>
-        <option value="krajDesc">Datum zavrsetka ↓</option>
-    </select>
-
-    <input type="submit" value="Pretrazi" />
-</form>
-
-<hr />
-
-@if (Model != null && Model.Any())
+@if (TempData["Message"] != null)
 {
-    foreach (var a in Model)
-    {
-        <div style="border:1px solid gray; margin:10px; padding:10px;">
-            <h3>@a.Naziv</h3>
-            <p><b>Lokacija:</b> @a.Lokacija</p>
-            <p><b>Trajanje:</b> @a.DatumPocetka - @a.DatumZavrsetka</p>
-            <p><b>Tip prevoza:</b> @a.TipPrevoza</p>
-            <p><b>Tip aranžmana:</b> @a.TipAranzmana</p>
-            <img src="@a.Poster" alt="poster" style="width:200px;" />
-            <br />
-            <a href="~/Home/Details?naziv=@a.Naziv">Detalji</a>
-            @if (Session["user"] != null &&
-         ((WebProjectTurist.Models.Korisnik)Session["user"]).Uloga == WebProjectTurist.Models.UlogaKorisnika.Turista)
-            {
-                <a href="/Turista/NovaRezervacija?naziv=@a.Naziv" class="btn btn-success">Rezerviši</a>
-            }
-        </div>
-    }
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model.Count == 0)
+{
+    <p>Trenutno nema dostupnih radionica.</p>
 }
 else
 {
-    <p>Nema dostupnih aranzmana.</p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Naziv</th>
+                <th>Kategorija</th>
+                <th>Datum i vreme početka</th>
+                <th>Trajanje (min)</th>
+                <th>Mesto</th>
+                <th>Slobodna mesta</th>
+                <th>Status</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Naziv</td>
+                    <td>@r.Kategorija</td>
+                    <td>@r.DatumVremepocetka</td>
+                    <td>@r.Trajanje</td>
+                    <td>@r.MestoOdrzavanja</td>
+                    <td>@r.BrojSlobodnihMesta / @r.MaksimalanBrojUcesnika</td>
+                    <td>@r.Status</td>
+                    <td>
+                        <a href="@Url.Action("Detalji", "Home", new { id = r.Id })" class="btn btn-sm btn-info">Detalji</a>
+                        @if (uloga == "Ucesnik")
+                        {
+                            using (Html.BeginForm("PrijaviSe", "Ucesnik", FormMethod.Post, new { style = "display:inline" }))
+                            {
+                                <input type="hidden" name="radionicaId" value="@r.Id" />
+                                <button type="submit" class="btn btn-sm btn-success">Prijavi se</button>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }

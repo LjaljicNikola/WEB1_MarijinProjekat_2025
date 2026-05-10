@@ -1,104 +1,67 @@
-﻿@using WebProjectTurist.Models
-@{
-    var user = (Korisnik)Session["user"];
-    var uloga = user != null ? user.Uloga.ToString() : "Gost";
-}
-
 <!DOCTYPE html>
-<html lang="sr">
+<html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - WebProjectTurist</title>
-    <link rel="stylesheet" href="~/Content/Css/bootstrap.min.css" />
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        footer {
-            background-color: #222;
-            color: #ccc;
-            padding: 15px 0;
-            text-align: center;
-            margin-top: 40px;
-        }
-
-        nav a {
-            font-weight: 500;
-        }
-    </style>
+    <title>@ViewBag.Title - Edukacioni centar</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
 </head>
 <body>
-    <!-- Navigacija -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">🌍 TuristPortal</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="navbar-header">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")">Edukacioni centar</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Radionice", "Index", "Home")</li>
 
-            <div id="mainNav" class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Pocetna</a>
-                    </li>
+                    @{
+                        var uloga = Session["uloga"] as string;
+                    }
 
-                    @if (user == null)
+                    @if (uloga == "Ucesnik")
                     {
-                        <li class="nav-item"><a class="nav-link" href="/Authentication/Login">Prijava</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Authentication/Register">Registracija</a></li>
+                        <li>@Html.ActionLink("Moje prijave", "Prijave", "Ucesnik")</li>
                     }
-                    else if (user.Uloga == UlogaKorisnika.Turista)
+
+                    @if (uloga == "Predavac")
                     {
-                        <li class="nav-item"><a class="nav-link" href="/Turista/Rezervacije">Moje rezervacije</a></li>
+                        <li>@Html.ActionLink("Moje radionice", "Radionice", "Predavac")</li>
                     }
-                    else if (user.Uloga == UlogaKorisnika.Menadzer)
+
+                    @if (uloga == "Administrator")
                     {
-                        <li class="nav-item"><a class="nav-link" href="/Menadzer/Aranzmani">Aranzmani</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Menadzer/Rezervacije">Rezervacije</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Menadzer/Komentari">Komentari</a></li>
-                    }
-                    else if (user.Uloga == UlogaKorisnika.Administrator)
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Admin/Korisnici">Korisnici</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Admin/NoviMenadzer">Novi menadzer</a></li>
+                        <li>@Html.ActionLink("Predavači", "Predavaci", "Admin")</li>
+                        <li>@Html.ActionLink("Novi predavač", "NoviPredavac", "Admin")</li>
                     }
                 </ul>
-
-                <ul class="navbar-nav">
-                    @if (user != null)
+                <ul class="nav navbar-nav navbar-right">
+                    @if (Session["user"] != null)
                     {
-                        <li class="nav-item me-3">
-                            <a class="nav-link text-light" href="/Profile/ViewProfile">👤 Moj profil</a>
-                        </li>
-                        <li class="nav-item d-flex align-items-center">
-                            <span class="navbar-text text-light me-3">
-                                @user.Ime @user.Prezime (@user.Uloga)
-                            </span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-outline-light btn-sm" href="/Authentication/Logout">Odjava</a>
-                        </li>
+                        <li><a>Ulogovani ste (@uloga)</a></li>
+                        <li>@Html.ActionLink("Odjava", "Logout", "Authentication")</li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Prijava", "Login", "Authentication")</li>
+                        <li>@Html.ActionLink("Registracija", "Register", "Authentication")</li>
                     }
                 </ul>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- Glavni sadrzaj -->
-    <main class="container mt-4">
+    <div class="container body-content" style="margin-top: 70px;">
         @RenderBody()
-    </main>
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Edukacioni centar</p>
+        </footer>
+    </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; @DateTime.Now.Year - WebProjectTurist | Projektni zadatak</p>
-        </div>
-    </footer>
-
-    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
-    @RenderSection("scripts", required: false)
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
 </body>
 </html>

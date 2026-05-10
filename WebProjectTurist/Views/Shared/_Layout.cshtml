@@ -1,0 +1,104 @@
+﻿@using WebProjectTurist.Models
+@{
+    var user = (Korisnik)Session["user"];
+    var uloga = user != null ? user.Uloga.ToString() : "Gost";
+}
+
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - WebProjectTurist</title>
+    <link rel="stylesheet" href="~/Content/Css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        footer {
+            background-color: #222;
+            color: #ccc;
+            padding: 15px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        nav a {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigacija -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">🌍 TuristPortal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div id="mainNav" class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Pocetna</a>
+                    </li>
+
+                    @if (user == null)
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Authentication/Login">Prijava</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Authentication/Register">Registracija</a></li>
+                    }
+                    else if (user.Uloga == UlogaKorisnika.Turista)
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Turista/Rezervacije">Moje rezervacije</a></li>
+                    }
+                    else if (user.Uloga == UlogaKorisnika.Menadzer)
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Menadzer/Aranzmani">Aranzmani</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Menadzer/Rezervacije">Rezervacije</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Menadzer/Komentari">Komentari</a></li>
+                    }
+                    else if (user.Uloga == UlogaKorisnika.Administrator)
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Admin/Korisnici">Korisnici</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Admin/NoviMenadzer">Novi menadzer</a></li>
+                    }
+                </ul>
+
+                <ul class="navbar-nav">
+                    @if (user != null)
+                    {
+                        <li class="nav-item me-3">
+                            <a class="nav-link text-light" href="/Profile/ViewProfile">👤 Moj profil</a>
+                        </li>
+                        <li class="nav-item d-flex align-items-center">
+                            <span class="navbar-text text-light me-3">
+                                @user.Ime @user.Prezime (@user.Uloga)
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-light btn-sm" href="/Authentication/Logout">Odjava</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Glavni sadrzaj -->
+    <main class="container mt-4">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; @DateTime.Now.Year - WebProjectTurist | Projektni zadatak</p>
+        </div>
+    </footer>
+
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

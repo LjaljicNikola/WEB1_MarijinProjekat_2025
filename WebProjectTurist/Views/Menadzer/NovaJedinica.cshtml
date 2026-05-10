@@ -1,0 +1,32 @@
+﻿@model WebProjectTurist.Models.SmestajnaJedinica
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Nova smeštajna jedinica";
+    var nazivSmestaja = ViewBag.NazivSmestaja;
+}
+
+<div class="container mt-4">
+    <h2>➕ Dodaj novu smeštajnu jedinicu za smeštaj: <b>@nazivSmestaja</b></h2>
+
+    <form method="post" action="/Menadzer/SacuvajJedinicu">
+        <input type="hidden" name="nazivSmestaja" value="@nazivSmestaja" />
+
+        <div class="form-group mb-3">
+            <label>Dozvoljen broj gostiju:</label>
+            <input type="number" name="DozvoljenBrojGostiju" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" name="DozvoljeniLjubimci" value="true" />
+            <label class="form-check-label">Dozvoljeni kućni ljubimci</label>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Cena (EUR):</label>
+            <input type="number" name="Cena" step="0.01" min="0" class="form-control" required />
+        </div>
+
+        <button type="submit" class="btn btn-success">💾 Sačuvaj</button>
+        <a href="/Menadzer/SmestajneJedinice?nazivSmestaja=@nazivSmestaja" class="btn btn-secondary">Nazad</a>
+    </form>
+</div>

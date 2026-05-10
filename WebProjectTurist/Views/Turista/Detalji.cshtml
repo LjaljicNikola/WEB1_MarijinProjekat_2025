@@ -1,0 +1,31 @@
+﻿@model WebProjectTurist.Models.Rezervacija
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Detalji rezervacije";
+}
+
+<h2>Detalji rezervacije</h2>
+
+<div class="card p-3 mb-3" style="border: 1px solid #ccc; border-radius: 8px;">
+    <p><b>ID rezervacije:</b> @Model.Id</p>
+    <p><b>Aranžman:</b> @Model.AranzmanRezervacije.Naziv</p>
+    <p><b>Datum početka:</b> @Model.AranzmanRezervacije.DatumPocetka</p>
+    <p><b>Datum završetka:</b> @Model.AranzmanRezervacije.DatumZavrsetka</p>
+    <p><b>Status:</b> @Model.Status</p>
+    <p><b>Broj gostiju:</b> @Model.Jedinica.DozvoljenBrojGostiju</p>
+    <p><b>Cena:</b> @Model.Jedinica.Cena €</p>
+</div>
+
+<div>
+    <a href="/Turista/Rezervacije" class="btn btn-secondary">⬅ Nazad</a>
+
+    @if (Model.Status == WebProjectTurist.Models.RezervacijaStatus.Aktivna)
+    {
+        <form action="/Turista/Otkazi" method="post" style="display:inline;">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-danger">Otkazi rezervaciju</button>
+        </form>
+    }
+
+    <a href="/Turista/OstaviKomentar?id=@Model.Id" class="btn btn-success">📝 Ostavi komentar</a>
+</div>

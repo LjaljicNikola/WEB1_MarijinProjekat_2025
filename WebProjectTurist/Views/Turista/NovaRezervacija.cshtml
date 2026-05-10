@@ -1,0 +1,106 @@
+﻿@model WebProjectTurist.Models.Aranzman
+@using WebProjectTurist.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Nova rezervacija";
+    var message = ViewBag.Message as string;
+}
+
+<h2>Nova rezervacija – @Model.Naziv</h2>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-warning">@message</div>
+}
+
+<div style="margin-bottom:20px;">
+    <p><strong>Tip aranžmana:</strong> @Model.TipAranzmana</p>
+    <p><strong>Tip prevoza:</strong> @Model.TipPrevoza</p>
+    <p><strong>Lokacija:</strong> @Model.Lokacija</p>
+    <p><strong>Period:</strong> @Model.DatumPocetka – @Model.DatumZavrsetka</p>
+    <p><strong>Opis:</strong> @Model.Opis</p>
+</div>
+
+@if (Model.Smestaji == null || !Model.Smestaji.Any())
+{
+    <p class="text-danger">Trenutno nema dostupnih smeštaja za ovaj aranžman.</p>
+}
+else
+{
+    <form method="post" action="@Url.Action("NapraviRezervaciju", "Turista")">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="nazivAranzmana" value="@Model.Naziv" />
+
+        <!-- Odabir smeštaja -->
+        <div class="form-group mb-3">
+            <label for="nazivSmestaja">Odaberite smeštaj:</label>
+            <select name="nazivSmestaja" id="nazivSmestaja" class="form-control" required>
+                <option value="">-- Odaberite smeštaj --</option>
+                @foreach (var s in Model.Smestaji)
+                {
+                    <option value="@s.Naziv">@s.Naziv (@s.Tip, zvezdice: @s.BrojZvezdica)</option>
+                }
+            </select>
+        </div>
+
+        <!-- Odabir smeštajne jedinice (dinamički popunjava JS) -->
+        <div class="form-group mb-3">
+            <label for="indexJedinice">Slobodna smeštajna jedinica:</label>
+            <select name="indexJedinice" id="indexJedinice" class="form-control" required disabled>
+                <option value="">-- Prvo izaberite smeštaj --</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Potvrdi rezervaciju</button>
+        <a href="/Home/Index" class="btn btn-secondary">Nazad</a>
+    </form>
+}
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+                @using System.Web.Script.Serialization
+@{
+    var serializer = new JavaScriptSerializer();
+    var smestajiJson = serializer.Serialize(Model.Smestaji);
+}
+const smestaji = @Html.Raw(smestajiJson);
+
+        $("#nazivSmestaja").on("change", function () {
+            const naziv = $(this).val();
+            const selectJedinice = $("#indexJedinice");
+            selectJedinice.empty(); // očisti prethodne opcije
+
+            if (!naziv) {
+                selectJedinice.append('<option value="">-- Prvo izaberite smeštaj --</option>');
+                selectJedinice.prop("disabled", true);
+                return;
+            }
+
+            // pronađi izabrani smeštaj
+            const smestaj = smestaji.find(s => s.Naziv === naziv);
+            if (!smestaj || !smestaj.SmestajneJedinice) {
+                selectJedinice.append('<option value="">Nema slobodnih jedinica.</option>');
+                selectJedinice.prop("disabled", true);
+                return;
+            }
+
+            // filtriraj slobodne jedinice
+            const slobodne = smestaj.SmestajneJedinice.filter(j => j.Slobodna && !j.Obrisana);
+
+            if (slobodne.length === 0) {
+                selectJedinice.append('<option value="">Nema slobodnih jedinica.</option>');
+                selectJedinice.prop("disabled", true);
+                return;
+            }
+
+            // napuni select
+            selectJedinice.prop("disabled", false);
+            selectJedinice.append('<option value="">-- Odaberite smeštajnu jedinicu --</option>');
+            slobodne.forEach((j, index) => {
+                const text = `Kapacitet: ${j.DozvoljenBrojGostiju} | Ljubimci: ${(j.DozvoljeniLjubimci ? 'Da' : 'Ne')} | Cena: ${j.Cena}€`;
+                selectJedinice.append(`<option value="${index}">${text}</option>`);
+            });
+        });
+    </script>
+}

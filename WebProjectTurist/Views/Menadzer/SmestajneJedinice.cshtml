@@ -1,0 +1,69 @@
+﻿﻿@model List<WebProjectTurist.Models.SmestajnaJedinica>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Smeštajne jedinice";
+    var nazivSmestaja = Request["nazivSmestaja"];
+    var nazivAranzmana = Request["nazivAranzmana"];
+}
+
+<div class="container mt-4">
+    <h2>🏠 Smeštajne jedinice za smeštaj: <b>@nazivSmestaja</b></h2>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info mt-2">@TempData["Message"]</div>
+    }
+
+<div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+    <a href="/Menadzer/NovaJedinica?nazivSmestaja=@nazivSmestaja" class="btn btn-success">➕ Dodaj novu jedinicu</a>
+    <a href="@Url.Action("Smestaji", "Menadzer", new { nazivAranzmana = ViewBag.NazivAranzmana })"
+       class="btn btn-secondary">
+        ⬅ Nazad na smeštaje
+    </a>
+</div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <p class="text-muted">Nema definisanih smeštajnih jedinica za ovaj smeštaj.</p>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Dozvoljen broj gostiju</th>
+                    <th>Dozvoljeni ljubimci</th>
+                    <th>Cena</th>
+                    <th>Obrisana</th>
+                    <th>Opcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var j = Model[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@j.DozvoljenBrojGostiju</td>
+                        <td>@(j.DozvoljeniLjubimci ? "Da" : "Ne")</td>
+                        <td>@j.Cena €</td>
+                        <td>@(j.Obrisana ? "Da" : "Ne")</td>
+                        <td>
+                            <form action="/Menadzer/ObrisiJedinicu" method="post" style="display:inline;">
+                                <input type="hidden" name="nazivSmestaja" value="@nazivSmestaja" />
+                                <input type="hidden" name="index" value="@i" />
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Da li ste sigurni da želite da obrišete ovu jedinicu?');">
+                                    🗑 Obriši
+                                </button>
+                                <a href="@Url.Action("IzmeniJedinicu", "Menadzer", new { nazivSmestaja = nazivSmestaja, index = i })"
+                                   class="btn btn-warning btn-sm">✏ Izmeni</a>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

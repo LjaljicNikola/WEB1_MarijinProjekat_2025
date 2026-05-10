@@ -1,0 +1,28 @@
+﻿@model WebProjectTurist.Models.Korisnik
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Izmena profila";
+}
+
+<h2>Izmeni profil</h2>
+
+<form method="post" action="/Profile/EditProfile">
+    <label>Ime:</label>
+    <input type="text" name="ime" value="@Model.Ime" required /><br />
+
+    <label>Prezime:</label>
+    <input type="text" name="prezime" value="@Model.Prezime" required /><br />
+
+    <label>Pol:</label>
+    <input type="radio" name="pol" value="M" @(Model.Pol == "M" ? "checked" : "") /> Muški
+    <input type="radio" name="pol" value="Z" @(Model.Pol == "Z" ? "checked" : "") /> Zenski
+    <br />
+
+    <label>Email:</label>
+    <input type="email" name="email" value="@Model.Email" /><br />
+
+    <label>Datum rođenja (dd/MM/yyyy):</label>
+    <input type="text" name="datumRodjenja" value="@Model.DatumRodjenja" /><br />
+
+    <input type="submit" value="Sačuvaj izmene" class="btn btn-primary" />
+</form>

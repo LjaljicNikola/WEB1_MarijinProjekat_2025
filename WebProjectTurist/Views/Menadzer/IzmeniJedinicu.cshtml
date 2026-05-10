@@ -1,0 +1,64 @@
+﻿@model WebProjectTurist.Models.SmestajnaJedinica
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Izmeni smeštajnu jedinicu";
+}
+
+<h2 class="text-center">Izmena smeštajne jedinice</h2>
+
+@using (Html.BeginForm("SacuvajIzmeneJedinice", "Menadzer", FormMethod.Post))
+{
+    <!-- Sakrivena polja (klasičan HTML način, bez Html.Hidden) -->
+    <input type="hidden" name="nazivSmestaja" value="@ViewBag.NazivSmestaja" />
+    <input type="hidden" name="index" value="@ViewBag.Index" />
+
+    <div class="form-horizontal" style="max-width: 600px; margin: 0 auto;">
+        <hr />
+
+        <!-- Broj gostiju -->
+        <div class="form-group">
+            @Html.LabelFor(m => m.DozvoljenBrojGostiju, "Dozvoljen broj gostiju", new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.DozvoljenBrojGostiju, new { @class = "form-control", type = "number", min = "1", max = "20" })
+                <small class="text-muted">⚠ Ne može se menjati ako postoji aktivna buduća rezervacija.</small>
+            </div>
+        </div>
+
+        <!-- Dozvoljeni ljubimci -->
+        <div class="form-group">
+            <div class="col-md-offset-4 col-md-8">
+                <div class="checkbox">
+                    <label>@Html.CheckBoxFor(m => m.DozvoljeniLjubimci) Dozvoljeni ljubimci</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cena -->
+        <div class="form-group">
+            @Html.LabelFor(m => m.Cena, "Cena (€)", new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.Cena, new { @class = "form-control", type = "number", min = "0", step = "0.01" })
+            </div>
+        </div>
+
+        <!-- Slobodna -->
+        <div class="form-group">
+            <div class="col-md-offset-4 col-md-8">
+                <div class="checkbox">
+                    <label>@Html.CheckBoxFor(m => m.Slobodna) Slobodna</label>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- Dugmad -->
+        <div class="form-group text-center">
+            <input type="submit" value="Sačuvaj izmene" class="btn btn-primary" style="width: 200px;" />
+            <a href="@Url.Action("SmestajneJedinice", "Menadzer", new { nazivSmestaja = ViewBag.NazivSmestaja })"
+               class="btn btn-secondary" style="width: 200px; margin-left: 10px;">
+                Nazad
+            </a>
+        </div>
+    </div>
+}

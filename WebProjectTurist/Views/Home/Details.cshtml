@@ -1,0 +1,152 @@
+﻿@model WebProjectTurist.Models.Aranzman
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Detalji aranzmana";
+}
+
+<h2>@Model.Naziv</h2>
+<p><b>Lokacija:</b> @Model.Lokacija</p>
+<p><b>Trajanje:</b> @Model.DatumPocetka - @Model.DatumZavrsetka</p>
+<p><b>Opis:</b> @Model.Opis</p>
+<p><b>Program:</b> @Model.ProgramPutovanja</p>
+<img src="@Model.Poster" style="width:300px;" />
+
+<hr />
+<h3>Smestaji</h3>
+
+<form method="get" action="@Url.Action("Details", "Home")">
+    <input type="hidden" name="naziv" value="@Model.Naziv" />
+
+    Tip:
+    <select name="tip">
+        <option value="">--</option>
+        <option value="Hotel" @(Request["tip"] == "Hotel" ? "selected" : "")>Hotel</option>
+        <option value="Motel" @(Request["tip"] == "Motel" ? "selected" : "")>Motel</option>
+        <option value="Vila" @(Request["tip"] == "Vila" ? "selected" : "")>Vila</option>
+    </select>
+
+    Naziv:
+    <input name="nazivSmestaja" value="@Request["nazivSmestaja"]" />
+
+    Bazen:
+    <select name="bazen">
+        <option value="">--</option>
+        <option value="true" @(Request["bazen"] == "true" ? "selected" : "")>Da</option>
+        <option value="false" @(Request["bazen"] == "false" ? "selected" : "")>Ne</option>
+    </select>
+
+    Spa:
+    <select name="spa">
+        <option value="">--</option>
+        <option value="true" @(Request["spa"] == "true" ? "selected" : "")>Da</option>
+        <option value="false" @(Request["spa"] == "false" ? "selected" : "")>Ne</option>
+    </select>
+
+    Invaliditet:
+    <select name="invaliditet">
+        <option value="">--</option>
+        <option value="true" @(Request["invaliditet"] == "true" ? "selected" : "")>Da</option>
+        <option value="false" @(Request["invaliditet"] == "false" ? "selected" : "")>Ne</option>
+    </select>
+
+    <hr />
+    <h4>Filteri za smeštajne jedinice</h4>
+
+    Donja granica gostiju:
+    <input type="number" name="minGosti" value="@Request["minGosti"]" style="width:70px;" />
+
+    Gornja granica gostiju:
+    <input type="number" name="maxGosti" value="@Request["maxGosti"]" style="width:70px;" />
+
+    <br />
+
+    Ljubimci dozvoljeni:
+    <select name="ljubimci">
+        <option value="">--</option>
+        <option value="true" @(Request["ljubimci"] == "true" ? "selected" : "")>Da</option>
+        <option value="false" @(Request["ljubimci"] == "false" ? "selected" : "")>Ne</option>
+    </select>
+
+    Cena (max):
+    <input type="number" name="cena" step="0.01" value="@Request["cena"]" style="width:90px;" />
+
+    <br />
+
+    Wifi:
+    <select name="wifi">
+        <option value="">--</option>
+        <option value="true" @(Request["wifi"] == "true" ? "selected" : "")>Da</option>
+        <option value="false" @(Request["wifi"] == "false" ? "selected" : "")>Ne</option>
+    </select>
+
+    <hr />
+    Sortiraj smeštaj:
+    <select name="sortSmestaj">
+        <option value="">--</option>
+        <option value="nazivAsc" @(Request["sortSmestaj"] == "nazivAsc" ? "selected" : "")>Naziv ↑</option>
+        <option value="nazivDesc" @(Request["sortSmestaj"] == "nazivDesc" ? "selected" : "")>Naziv ↓</option>
+        <option value="ukupnoAsc" @(Request["sortSmestaj"] == "ukupnoAsc" ? "selected" : "")>Broj jedinica ↑</option>
+        <option value="ukupnoDesc" @(Request["sortSmestaj"] == "ukupnoDesc" ? "selected" : "")>Broj jedinica ↓</option>
+        <option value="slobodneAsc" @(Request["sortSmestaj"] == "slobodneAsc" ? "selected" : "")>Broj slobodnih jedinica ↑</option>
+        <option value="slobodneDesc" @(Request["sortSmestaj"] == "slobodneDesc" ? "selected" : "")> Broj slobodnih jedinica ↓ </option>
+    </select>
+
+    Sortiraj jedinice:
+    <select name="sortJedinice">
+        <option value="">--</option>
+        <option value="gostiAsc" @(Request["sortJedinice"] == "gostiAsc" ? "selected" : "")>Gosti ↑</option>
+        <option value="gostiDesc" @(Request["sortJedinice"] == "gostiDesc" ? "selected" : "")>Gosti ↓</option>
+        <option value="cenaAsc" @(Request["sortJedinice"] == "cenaAsc" ? "selected" : "")>Cena ↑</option>
+        <option value="cenaDesc" @(Request["sortJedinice"] == "cenaDesc" ? "selected" : "")>Cena ↓</option>
+        <option value="slobodnePrve" @(Request["sortJedinice"] == "slobodnePrve" ? "selected" : "")>Slobodne jedinice prvo</option>
+    </select>
+    <br />
+
+    <input type="submit" value="Filtriraj" class="btn btn-primary" />
+    <!-- Dugme koje briše sve filtere -->
+    <a href="@Url.Action("Details", "Home", new { naziv = Model.Naziv })" class="btn btn-secondary">
+        Poništi filter
+    </a>
+</form>
+
+
+@foreach (var s in Model.Smestaji)
+{
+    <div style="border:1px solid gray; margin:10px; padding:10px;">
+        <h4>@s.Naziv (@s.Tip)</h4>
+        <p><b>Zvezdice:</b> @s.BrojZvezdica</p>
+        <p><b>Bazen:</b> @(s.Bazen ? "Da" : "Ne") | <b>Spa:</b> @(s.Spa ? "Da" : "Ne")</p>
+        <p><b>Wifi:</b> @(s.Wifi ? "Da" : "Ne") | <b>Invaliditet:</b> @(s.Invaliditet ? "Da" : "Ne")</p>
+
+        <h5>Smestajne jedinice:</h5>
+        <ul>
+            @foreach (var j in s.SmestajneJedinice)
+            {
+                <li>
+                    <b>@j.DozvoljenBrojGostiju</b> osoba — <b>@j.Cena</b> €
+                    @(j.DozvoljeniLjubimci ? "(Ljubimci dozvoljeni)" : "")
+                </li>
+            }
+        </ul>
+
+        <h5>Komentari:</h5>
+        @{
+            var komentari = ((List<WebProjectTurist.Models.Komentar>)ViewBag.Komentari)
+                            .Where(c => c.SmestajKomentar.Naziv == s.Naziv).ToList();
+        }
+        @if (komentari.Any())
+        {
+            foreach (var c in komentari)
+            {
+                <div style="border:1px dashed gray; margin:5px; padding:5px;">
+                    <p><b>@c.Turista.KorisnickoIme</b> (ocena: @c.Ocena/5)</p>
+                    <p>@c.Tekst</p>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Nema komentara za ovaj smeštaj.</p>
+        }
+    </div>
+}

@@ -1,0 +1,69 @@
+﻿@model WebProjectTurist.Models.Rezervacija
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Detalji rezervacije";
+}
+
+<h2>Detalji rezervacije</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>ID rezervacije:</th>
+        <td>@Model.Id</td>
+    </tr>
+    <tr>
+        <th>Turista:</th>
+        <td>@Model.TuristaKorisnickoIme</td>
+    </tr>
+    <tr>
+        <th>Status:</th>
+        <td>@Model.Status</td>
+    </tr>
+    <tr>
+        <th>Aranžman:</th>
+        <td>@Model.AranzmanRezervacije.Naziv</td>
+    </tr>
+    <tr>
+        <th>Tip aranžmana:</th>
+        <td>@Model.AranzmanRezervacije.TipAranzmana</td>
+    </tr>
+    <tr>
+        <th>Prevoz:</th>
+        <td>@Model.AranzmanRezervacije.TipPrevoza</td>
+    </tr>
+    <tr>
+        <th>Lokacija:</th>
+        <td>@Model.AranzmanRezervacije.Lokacija</td>
+    </tr>
+    <tr>
+        <th>Trajanje:</th>
+        <td>@Model.AranzmanRezervacije.DatumPocetka - @Model.AranzmanRezervacije.DatumZavrsetka</td>
+    </tr>
+    <tr>
+        <th>Opis:</th>
+        <td>@Model.AranzmanRezervacije.Opis</td>
+    </tr>
+    <tr>
+        <th>Smještaj:</th>
+        <td>
+            @foreach (var s in Model.AranzmanRezervacije.Smestaji)
+            {
+                <p>@s.Naziv (@s.Tip, @s.BrojZvezdica★)</p>
+            }
+        </td>
+    </tr>
+    <tr>
+        <th>Jedinica:</th>
+        <td>
+            Broj gostiju: @Model.Jedinica.DozvoljenBrojGostiju <br />
+            Ljubimci: @(Model.Jedinica.DozvoljeniLjubimci ? "Da" : "Ne") <br />
+            Cijena: @Model.Jedinica.Cena <br />
+            Slobodna: @(Model.Jedinica.Slobodna ? "Da" : "Ne")
+        </td>
+    </tr>
+</table>
+
+<p>
+    @Html.ActionLink("Nazad na listu", "Rezervacije", null, new { @class = "btn btn-secondary" })
+</p>

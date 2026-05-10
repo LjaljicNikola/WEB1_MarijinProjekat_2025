@@ -1,67 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="sr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Edukacioni centar</title>
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/Site.css" rel="stylesheet" />
+    <link href="~/Content/Css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            padding-top: 70px;
+            background-color: #f8f9fa;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 20px 0;
+            color: #6c757d;
+        }
+    </style>
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    @{
+        var uloga = Session["uloga"] as string;
+    }
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="@Url.Action("Index", "Home")">Edukacioni centar</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Radionice", "Index", "Home")</li>
-
-                    @{
-                        var uloga = Session["uloga"] as string;
-                    }
-
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">Edukacioni centar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Index", "Home")">Radionice</a>
+                    </li>
                     @if (uloga == "Ucesnik")
                     {
-                        <li>@Html.ActionLink("Moje prijave", "Prijave", "Ucesnik")</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Prijave", "Ucesnik")">Moje prijave</a>
+                        </li>
                     }
-
                     @if (uloga == "Predavac")
                     {
-                        <li>@Html.ActionLink("Moje radionice", "Radionice", "Predavac")</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Radionice", "Predavac")">Moje radionice</a>
+                        </li>
                     }
-
                     @if (uloga == "Administrator")
                     {
-                        <li>@Html.ActionLink("Predavači", "Predavaci", "Admin")</li>
-                        <li>@Html.ActionLink("Novi predavač", "NoviPredavac", "Admin")</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Predavaci", "Admin")">Predavači</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("NoviPredavac", "Admin")">Novi predavač</a>
+                        </li>
                     }
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
+                <ul class="navbar-nav ms-auto">
                     @if (Session["user"] != null)
                     {
-                        <li><a>Ulogovani ste (@uloga)</a></li>
-                        <li>@Html.ActionLink("Odjava", "Logout", "Authentication")</li>
+                        <li class="nav-item">
+                            <span class="nav-link text-light">@uloga</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Logout", "Authentication")">Odjava</a>
+                        </li>
                     }
                     else
                     {
-                        <li>@Html.ActionLink("Prijava", "Login", "Authentication")</li>
-                        <li>@Html.ActionLink("Registracija", "Register", "Authentication")</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Login", "Authentication")">Prijava</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Register", "Authentication")">Registracija</a>
+                        </li>
                     }
                 </ul>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <div class="container body-content" style="margin-top: 70px;">
+    <div class="container">
         @RenderBody()
         <hr />
-        <footer>
+        <footer class="text-center">
             <p>&copy; @DateTime.Now.Year - Edukacioni centar</p>
         </footer>
     </div>
 
-    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
 </body>
 </html>

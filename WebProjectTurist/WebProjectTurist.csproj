@@ -124,12 +124,9 @@
     <Content Include="App_Data\ucesnici.json" />
     <None Include="packages.config" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Home\Details.cshtml" />
     <Content Include="Views\Authentication\Register.cshtml" />
     <Content Include="Views\Authentication\Login.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Admin\Korisnici.cshtml" />
-    <Content Include="Views\Admin\NoviMenadzer.cshtml" />
     <Content Include="Views\Admin\AzurirajPredavaca.cshtml" />
     <Content Include="Views\Admin\NoviPredavac.cshtml" />
     <Content Include="Views\Admin\Predavaci.cshtml" />
@@ -138,6 +135,7 @@
     <Content Include="Views\Predavac\Prijave.cshtml" />
     <Content Include="Views\Predavac\Radionice.cshtml" />
     <Content Include="Views\Ucesnik\Prijave.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
